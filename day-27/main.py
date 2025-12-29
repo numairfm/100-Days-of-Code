@@ -34,7 +34,7 @@ def calculate():
     except TypeError:
         label2.config(text="0")
     
-    
+                                                                                                                                                                               
 
 button = tk.Button(text="Calculate", command=calculate)
 button.grid(column=1, row=2)
