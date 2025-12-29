@@ -39,7 +39,7 @@ def main():
     
 
     for i in range(int(input("How many tokens to generate?\n> "))):
-        print(token, end=" ")
+        print(token, end=" ", flush=True)
         candidates = []
         try:
             candidates = [t for t in alt_correlations.correlations.get(token, []) if is_valid_token(t)]
@@ -49,7 +49,6 @@ def main():
             token = random.choice(tokens.list_of_tokens)
         else:
             token = random.choice(candidates)
-    print()
     print()
     
 if __name__ == "__main__":
