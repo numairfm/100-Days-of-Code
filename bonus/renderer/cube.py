@@ -39,14 +39,8 @@ EDGES = [
     (0, 3), (1, 5), (4, 7), (2, 6)
 ]
 
-def rotate(VERTICES):
-    rotated_vertices = []
-    for v in VERTICES:
-        v_y = np.dot(rotation_y, v)
-        v_xy = np.dot(rotation_x, v_y)
-        v_xyz = np.dot(rotation_z, v_xy)
-        rotated_vertices.append(v_xyz)
-    return rotated_vertices
+def rotate(VERTICES, rotation_matrix):
+    return np.dot(VERTICES, rotation_matrix)
 
 def matrix_x(angle):
     matrix = [
@@ -123,24 +117,25 @@ while running:
     mouse_buttons = pygame.mouse.get_pressed()
     if mouse_buttons[0]:
         rel_x, rel_y = pygame.mouse.get_rel()
-        print(rel_x, rel_y)
-        
+        # print(rel_x, rel_y)
         vel_x = rel_x * 0.005
         vel_y = rel_y * 0.005
     else:
         pygame.mouse.get_rel()
         
-        vel_x *= friction
-        vel_y *= friction
+        vel_x *= (friction)
+        vel_y *= (friction)
     
     angle_x += vel_x
     angle_y += vel_y
+        
+    rot_x = matrix_x(angle_y)
+    rot_y = matrix_y(-angle_x)
+    rot_z = matrix_z(0)
     
-    rotation_y = matrix_y(-angle_x)
-    rotation_x = matrix_x(angle_y)
-    rotation_z = matrix_z(0)
+    rotation_matrix = np.dot(rot_x, np.dot(rot_y, rot_z))
     
-    rotated_vertices = rotate(VERTICES)
+    rotated_vertices = rotate(VERTICES, rotation_matrix)
     
     POINTS = project(rotated_vertices)
     
@@ -149,6 +144,7 @@ while running:
     
     pygame.display.flip()
     dt = clock.tick(60) / 1000
-            
+    
+    pygame.display.set_caption(str(clock.get_fps()))
 pygame.quit()
 
