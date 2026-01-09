@@ -1,4 +1,5 @@
 import pygame as pg
+import pygame_gui as pgui
 import math
 import numpy
 import random
@@ -10,8 +11,16 @@ particles = []
 pg.init()
 
 screen_size = (800, 800)
-
 screen = pg.display.set_mode(screen_size)
+
+manager = pgui.UIManager((800, 800))
+
+particle_slider = pgui.elements.UIHorizontalSlider(relative_rect=pg.Rect((10, screen_size[1] - 40), (200, 30)),
+                                                   start_value=100,
+                                                   value_range=(0, 2000),
+                                                   manager=manager
+                                                   )
+
 center = (screen_size[0] / 2, screen_size[1] / 2)
 clock = pg.time.Clock()
 font = pg.font.SysFont("Arial", 20)
@@ -53,6 +62,7 @@ def rectangles_collide(a, b):
         return "BOTTOM"
     
 def update_particles(particle_list, dt):
+    screen.fill((0,0,0))
     for p in particle_list:
         vx = p["sx"] * math.cos(p["angle"])
         vy = p["sy"] * math.sin(p["angle"])
@@ -131,7 +141,7 @@ def spawn_particles(count, size, mode):
         particles.append(create_particle(*center, color=(random.randrange(0, 255, 40), random.randrange(0, 255, 40), random.randrange(0, 255, 40)), size=(size * 2, size * 2), speed=(random.randint(1, 10), random.randint(1, 10)), angle=random.randrange(0, 360, 15), mode=mode))
     return size
 
-size = spawn_particles(300, 10, mode="fireflies")
+size = spawn_particles(0, 10, mode="fireflies")
 
 running = True
 while running:
@@ -139,11 +149,24 @@ while running:
         if event.type == pg.QUIT:
             running = False
         
+        manager.process_events(event)
+        
+        if event.type == pgui.UI_HORIZONTAL_SLIDER_MOVED:
+            if event.ui_element == particle_slider:
+                new_count = int(event.value)
+                particles = []
+                size = spawn_particles(new_count, 5, mode="debug")
+                print(new_count)
+        
     screen.fill((0,0,0))
     fps = clock.get_fps()
     fps_text = font.render(f"FPS: {fps:.2f}", True, (255, 255, 255))
     update_particles(particles, dt)
     screen.blit(fps_text, (10, 10))
+    
+    manager.update(dt)
+    manager.draw_ui(screen)
+    
     pg.display.flip()
     dt = clock.tick(60) / 1000  
     

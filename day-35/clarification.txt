@@ -1,0 +1,1 @@
+Couldnt access the openweatherdata api even with a key for some reason. Anyway I understood the lesson, and I skipped the task.
